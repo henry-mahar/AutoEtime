@@ -36,7 +36,6 @@ public class TimetableParser {
 			    endTimes.add(cols.get(3).toString());
 		    }
 		}
-		
 	}
 
 	public void printTimes() {

@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,6 +15,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.yrnehraham.ETime.parser.TimetableParser;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.yrnehraham.ETime.parser.AdpParser;
 
 public class ETimePanel extends JPanel{
 	/**
@@ -24,10 +27,10 @@ public class ETimePanel extends JPanel{
     private int height;
     private JButton enter;
     private JLabel instructions;
-    private JTextArea username = new JTextArea("username");
-    private JTextArea password = new JTextArea("password");
+    private JTextArea username = new JTextArea("********");
+    private JTextArea password = new JTextArea("********");
     
-    public ETimePanel(TimetableParser parser) {
+    public ETimePanel(TimetableParser tcdbParser, AdpParser adpParser) {
 
     	this.width = 400;
     	this.height = 500;
@@ -49,12 +52,17 @@ public class ETimePanel extends JPanel{
     	this.enter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!username.getText().trim().equals("") && !password.getText().trim().equals("") && parser != null) {
-					parser.attemptParse(username.getText().trim(), password.getText().trim());
-					parser.printTimes();
-				} else if (parser == null) {
-					throw new NullPointerException("Parser is null");
+				if (!username.getText().trim().equals("") && !password.getText().trim().equals("")) {
+					tcdbParser.attemptParse(username.getText().trim(), password.getText().trim());
+					try {
+						adpParser.getPageContent();
+					} catch (FailingHttpStatusCodeException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					tcdbParser.printTimes();
 				}
+				
 			}});
     }
 }

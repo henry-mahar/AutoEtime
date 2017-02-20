@@ -3,6 +3,7 @@ import java.awt.Rectangle;
 
 import com.yrnehraham.ETime.gfx.ETimePanel;
 import com.yrnehraham.ETime.parser.TimetableParser;
+import com.yrnehraham.ETime.parser.AdpParser;
 
 public class ETime {
 	
@@ -10,12 +11,13 @@ public class ETime {
     private static final double SPF = 1000000000.0 / FPS;
     
 	public static void main(String[] args) {
-		TimetableParser parser = new TimetableParser();
+		TimetableParser tcdbParser = new TimetableParser();
+		AdpParser adpParser = new AdpParser();
 		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("AutoETime");
-		ETimePanel panel = new ETimePanel(parser);
+		ETimePanel panel = new ETimePanel(tcdbParser, adpParser);
 		frame.getContentPane().add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
