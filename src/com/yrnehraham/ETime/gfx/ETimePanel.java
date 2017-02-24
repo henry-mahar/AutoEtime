@@ -27,8 +27,8 @@ public class ETimePanel extends JPanel{
     private int height;
     private JButton enter;
     private JLabel instructions;
-    private JTextArea username = new JTextArea("username");
-    private JTextArea password = new JTextArea("password");
+    private JTextArea username = new JTextArea("********");
+    private JTextArea password = new JTextArea("*********");
     
     public ETimePanel(TimetableParser tcdbParser, AdpParser adpParser) {
 
@@ -56,15 +56,25 @@ public class ETimePanel extends JPanel{
 					tcdbParser.attemptParse(username.getText().trim(), password.getText().trim());
 					
 					try {
-						adpParser.getPageContent();
+						adpParser.getPageContent(tcdbParser);
 					} catch (FailingHttpStatusCodeException | IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					
 					tcdbParser.printTimes();
+					
+					try {
+						Runtime rTime = Runtime.getRuntime();
+						String[] command = new String[]{"C:/Users/Henry/Desktop/chromeShortcut.lnk ", "C:/Users/Henry/Desktop/currentadp.html"};
+						Process pc = rTime.exec(command);
+						pc.waitFor();
+					} catch (Exception ex) {
+						System.out.println(ex);
+					}
+					
+					System.exit(0);
 				}
-				
 			}});
     }
 }

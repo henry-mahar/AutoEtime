@@ -1,6 +1,7 @@
 package com.yrnehraham.ETime.parser;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.MalformedURLException;
@@ -15,6 +16,8 @@ import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebConnection;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -29,6 +32,8 @@ import com.gargoylesoftware.htmlunit.javascript.host.URL;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
+import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 
@@ -43,7 +48,7 @@ public class AdpParser {
 		
 	}
 	
-	public void getPageContent() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
+	public void getPageContent(TimetableParser tcdbParser) throws FailingHttpStatusCodeException, MalformedURLException, IOException {
 		
 		
 		String url = "https://online.adp.com/portal/login.html";
@@ -68,10 +73,10 @@ public class AdpParser {
         
         
         HtmlTextInput userInput = (HtmlTextInput) page.getElementById("user_id");
-        userInput.setValueAttribute("username");
+        userInput.setValueAttribute("*********");
 
         HtmlPasswordInput passwordInput = (HtmlPasswordInput) page.getElementById("password");
-        passwordInput.setValueAttribute("password");
+        passwordInput.setValueAttribute("**********");
 
         HtmlElement theElement2 = (HtmlElement) page.getFirstByXPath("/html/body/ng-include/div[2]/div[1]/div[2]/div[3]/div/form/div[4]/button");
         page = theElement2.click();
@@ -92,12 +97,91 @@ public class AdpParser {
         page = (HtmlPage) myTimesheet.click();
         webClient.waitForBackgroundJavaScript(20 * 1000);
         //Etime Timetable has been parsed at this point
-        
-        HtmlTable payTable = page.getFirstByXPath("//*[@id='kronos']/form[1]/table[2]/tbody/tr[1]/td[1]/table");
+		System.out.println("ETime succesfully parsed");
+		HtmlTable payTable = page.getFirstByXPath("//*[@id='kronos']/form[1]/table[2]/tbody/tr[1]/td[1]/table");
+		
+		webClient.waitForBackgroundJavaScript(5 * 1000);
+		
+		HtmlTableCell previousCell = null;
+		int tcdbCounter = 0;
+		String pastDate = "xyz /placeholder";
+		ArrayList<String> endTimes = tcdbParser.getEndTimes();
+		ArrayList<String> startTimes = tcdbParser.getStartTimes();
+		
+		//Adds any additional rows that are needed
+		for (int i = 0; i < payTable.getRowCount() - 2; i++) {
+			if (tcdbCounter != endTimes.size()) {
+				HtmlTableRow row;
+				List<HtmlTableCell> cells;
+				
+				String currentTcdbDate = tcdbParser.getDates().get(tcdbCounter).toString();
+				String tcdbDay = currentTcdbDate.substring(
+						currentTcdbDate.indexOf(" ", currentTcdbDate.indexOf(" ") + 1) + 1);
+				
+				if (pastDate.substring(0, 3).equals(currentTcdbDate.substring(0, 3)) && pastDate.substring(pastDate.indexOf("/") + 1, pastDate.length() - 1)
+						.equals(tcdbDay)) {
+					HtmlAnchor addRow =  (HtmlAnchor) previousCell.getFirstElementChild().getFirstElementChild();
+					page = (HtmlPage) addRow.click();
+					payTable = page.getFirstByXPath("//*[@id='kronos']/form[1]/table[2]/tbody/tr[1]/td[1]/table");
+					row = payTable.getRow(i);
+					cells = row.getCells();
+				} else {
+					row = payTable.getRow(i);
+					cells = row.getCells();
+				}
+				String currentAdpMonth = cells.get(1).asText();
+				
+				if (currentAdpMonth.substring(0, 3).equals(currentTcdbDate.substring(0, 3))
+						&& currentAdpMonth.substring(currentAdpMonth.indexOf("/") + 1, currentAdpMonth.length() - 1)
+								.equals(tcdbDay)) {
+					tcdbCounter++;
+					previousCell = cells.get(0);
+				}
+				pastDate = currentAdpMonth;
+			}
+			
+		}
+		
+		//Assigns times from tcdbparser to the input fields
+		tcdbCounter = 0;
+		for (int i = 2; i < payTable.getRowCount() - 2; i++) {
+			if (tcdbCounter != endTimes.size()) {
+				HtmlTableRow row;
+				List<HtmlTableCell> cells;
+
+				String currentTcdbDate = tcdbParser.getDates().get(tcdbCounter).toString();
+				String tcdbDay = currentTcdbDate
+						.substring(currentTcdbDate.indexOf(" ", currentTcdbDate.indexOf(" ") + 1) + 1);
+				row = payTable.getRow(i);
+				cells = row.getCells();
+
+				String currentAdpMonth = cells.get(1).asText();
+				DomElement inTime = cells.get(4).getFirstElementChild().getFirstElementChild();
+				DomElement outTime = cells.get(6).getFirstElementChild().getFirstElementChild();
+				
+				if (currentAdpMonth.substring(0, 3).equals(currentTcdbDate.substring(0, 3))
+						&& currentAdpMonth.substring(currentAdpMonth.indexOf("/") + 1, currentAdpMonth.length() - 1)
+								.equals(tcdbDay)) {
+					System.out.println("Assignment made");
+					inTime.setAttribute("value", startTimes.get(tcdbCounter));
+					outTime.setAttribute("value", endTimes.get(tcdbCounter));
+					tcdbCounter++;
+					previousCell = cells.get(0);
+				}
+				pastDate = currentAdpMonth;
+			}
+		}
+		
+        System.out.println("The function has completed");
         
         String pageAsXml = page.asXml();
-
-        System.out.println("#FULL source after JavaScript execution:\n "+pageAsXml);
+        try{
+            PrintWriter writer = new PrintWriter("C:/Users/Henry/Desktop/currentadp.html", "UTF-8");
+            writer.println("#FULL source after JavaScript execution:\n "+pageAsXml);
+            writer.close();
+        } catch (IOException e) {
+           // do something
+        }
         webClient.close();
 	}
 	
@@ -148,19 +232,47 @@ public class AdpParser {
         HtmlAnchor myTimesheet = page.getFirstByXPath("//*[@id='kronos']/table/tbody/tr/td/table/tbody/tr[1]/td[1]/table/tbody/tr[2]/td/a");
         page = (HtmlPage) myTimesheet.click();
         webClient.waitForBackgroundJavaScript(20 * 1000);
-        //Etime Timetable has been parsed at this point
+        //Etime Timetable page has been parsed at this point
         
         HtmlTable payTable = page.getFirstByXPath("//*[@id='kronos']/form[1]/table[2]/tbody/tr[1]/td[1]/table");
         
-        String pageAsXml = page.asXml();
+        
+        /*
+        DomNodeList<DomNode> payTableNodeRows = payTable.getChildNodes();
+        DomNode previous = null;
+        for(int i = 0; i > payTableNodeRows.getLength(); i++) {
+        	System.out.println(payTableNodeRows.get(i).toString());
+        }
+        */
+        
+        Iterable<DomElement> payTableRows = payTable.getChildElements();
+        int counter = 0;
+        DomElement previous = null;
+        for(DomElement row : payTableRows) {
+        	System.out.println(row.toString());
+        	System.out.println("\n\n\n");
+        	if(row.getAttribute("class").toString() == "Date"){
+        		
+        	}
+        }
+        
+        
+        //String pageAsXml = page.asXml();
 
-        System.out.println("#FULL source after JavaScript execution:\n "+pageAsXml);
+        //System.out.println("#FULL source after JavaScript execution:\n "+pageAsXml);
         webClient.close();
         
 	}
 	
 	
-	public void fillOutAndSubmit() {
+	public void fillOutAndSubmit(TimetableParser tcdbParser) {
+		
+		for(int i = 0; i > tcdbParser.getDates().size(); i++) {
+
+		}
+		
+		
+		
 		
 	}
 	

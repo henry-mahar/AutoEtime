@@ -44,4 +44,16 @@ public class TimetableParser {
 		for (int i = 0; i < startTimes.size(); i++)
 			System.out.println("Date " + dates.get(i) + " Start Time " + startTimes.get(i) + " End Time " + endTimes.get(i));
 	}
+	
+	public ArrayList<String> getDates() {
+		return dates;
+	}
+	
+	public ArrayList<String> getStartTimes() {
+		return startTimes;
+	}
+	
+	public ArrayList<String> getEndTimes() {
+		return endTimes;
+	}
 }
