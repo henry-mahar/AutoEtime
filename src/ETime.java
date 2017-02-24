@@ -14,6 +14,9 @@ public class ETime {
 		TimetableParser tcdbParser = new TimetableParser();
 		AdpParser adpParser = new AdpParser();
 		
+		System.setProperty("javax.net.ssl.trustStore","C:/Users/Henry/workspace/AutoEtime/cacerts");
+		
+		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("AutoETime");

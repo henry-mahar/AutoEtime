@@ -27,8 +27,8 @@ public class ETimePanel extends JPanel{
     private int height;
     private JButton enter;
     private JLabel instructions;
-    private JTextArea username = new JTextArea("********");
-    private JTextArea password = new JTextArea("********");
+    private JTextArea username = new JTextArea("username");
+    private JTextArea password = new JTextArea("password");
     
     public ETimePanel(TimetableParser tcdbParser, AdpParser adpParser) {
 
@@ -54,12 +54,14 @@ public class ETimePanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				if (!username.getText().trim().equals("") && !password.getText().trim().equals("")) {
 					tcdbParser.attemptParse(username.getText().trim(), password.getText().trim());
+					
 					try {
 						adpParser.getPageContent();
 					} catch (FailingHttpStatusCodeException | IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					
 					tcdbParser.printTimes();
 				}
 				

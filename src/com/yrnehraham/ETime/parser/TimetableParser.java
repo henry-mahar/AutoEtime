@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 public class TimetableParser {
 
 	private Document doc;
+	private ArrayList<String> dates = new ArrayList<>();
 	private ArrayList<String> startTimes = new ArrayList<>();
 	private ArrayList<String> endTimes = new ArrayList<>();
 
@@ -32,14 +33,15 @@ public class TimetableParser {
 			Element row = rows.get(i);
 		    Elements cols = row.select("td");
 		    if(cols.size() > 4) {
-		    	startTimes.add(cols.get(2).toString());
-			    endTimes.add(cols.get(3).toString());
+		    	dates.add(cols.get(1).toString().substring(cols.get(1).toString().indexOf("\">") + 2, cols.get(1).toString().indexOf("</a>")));
+		    	startTimes.add(cols.get(2).toString().substring(4, 9));
+			    endTimes.add(cols.get(3).toString().substring(4, 9));
 		    }
 		}
 	}
 
 	public void printTimes() {
 		for (int i = 0; i < startTimes.size(); i++)
-			System.out.println("Start Time " + startTimes.get(i) + " End Time " + endTimes.get(i));
+			System.out.println("Date " + dates.get(i) + " Start Time " + startTimes.get(i) + " End Time " + endTimes.get(i));
 	}
 }
