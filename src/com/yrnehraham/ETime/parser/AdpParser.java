@@ -36,8 +36,6 @@ public class AdpParser {
 		
 		String url = "https://online.adp.com/portal/login.html";
 		
-		System.setProperty("javax.net.ssl.trustStore", "C:/Users/Henry/workspace/AutoEtime/cacerts");
-		
 		java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
         final WebClient webClient = new WebClient(BrowserVersion.CHROME);
         

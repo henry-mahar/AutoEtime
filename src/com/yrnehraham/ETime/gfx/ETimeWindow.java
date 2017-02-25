@@ -94,8 +94,8 @@ public class ETimeWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ETime.submitInfo(tcdbUserTextField.getText(), tcdbPasswordField.getPassword(),
-							adpUserTextField.getText(), adpPasswordField.getPassword());
+					ETime.submitInfo(tcdbUserTextField.getText(), new String(tcdbPasswordField.getPassword()),
+							adpUserTextField.getText(), new String(adpPasswordField.getPassword()));
 				} catch (FailingHttpStatusCodeException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

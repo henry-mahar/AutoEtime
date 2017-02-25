@@ -29,7 +29,7 @@ public class ETime {
 		});
 	}
 	
-	public static void submitInfo(String tcdbUsername, char[] tcdbPassword, String adpUsername, char[] adpPassword) throws FailingHttpStatusCodeException, IOException {
+	public static void submitInfo(String tcdbUsername, String tcdbPassword, String adpUsername, String adpPassword) throws FailingHttpStatusCodeException, IOException {
 		if(tcdbUsername.equals("")) {
 			generateErrorWindow("Please input a username for TCDB");
 		} else if(tcdbPassword.toString().equals("")){
@@ -39,14 +39,15 @@ public class ETime {
 		} else if(adpPassword.toString().equals("")){
 			generateErrorWindow("Please input a password for ADP");
 		} else {
+			
 			TimetableParser tcdbParser = new TimetableParser();
 			AdpParser adpParser = new AdpParser();
 			try {
-				tcdbParser.attemptParse(tcdbUsername.trim(), tcdbPassword.toString().trim());
+				tcdbParser.attemptParse(tcdbUsername.trim(), tcdbPassword.trim());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			adpParser.getPageContent(tcdbParser, adpUsername.trim(), adpPassword.toString().trim());
+			adpParser.getPageContent(tcdbParser, adpUsername.trim(), adpPassword.trim());
 			tcdbParser.printTimes();
 		}
 	}

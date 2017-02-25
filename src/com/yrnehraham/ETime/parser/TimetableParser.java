@@ -2,14 +2,24 @@ package com.yrnehraham.ETime.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.net.MalformedURLException;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
+import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 public class TimetableParser {
 
-	private Document doc;
+	private HtmlPage page;
 	private ArrayList<String> dates = new ArrayList<>();
 	private ArrayList<String> startTimes = new ArrayList<>();
 	private ArrayList<String> endTimes = new ArrayList<>();
@@ -18,26 +28,43 @@ public class TimetableParser {
 
 	}
 
-	public void attemptParse(String user, String pass) {
-		try {
-			this.doc = Jsoup.connect("http://tcdb/timesheet.php").data("login_username", user, "login_password", pass).post();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//System.out.println(doc.toString());
-		Elements timeTable = this.doc.getElementsByClass("ucdb");
-		Elements rows = timeTable.get(0).select("tr");
+	public void attemptParse(String user, String pass) throws FailingHttpStatusCodeException, MalformedURLException, IOException  {
+		
+		String url = "http://tcdb/timesheet.php";
+		
+		java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
+        final WebClient webClient = new WebClient(BrowserVersion.CHROME);
+        webClient.getOptions().setJavaScriptEnabled(false);
+        
+		page = webClient.getPage(url);
+
+        HtmlForm loginForm = page.getFirstByXPath("/html/body/form");
 		
 		
-		for(int i = 1; i < rows.size(); i += 1) {
-			Element row = rows.get(i);
-		    Elements cols = row.select("td");
-		    if(cols.size() > 4) {
-		    	dates.add(cols.get(1).toString().substring(cols.get(1).toString().indexOf("\">") + 2, cols.get(1).toString().indexOf("</a>")));
-		    	startTimes.add(cols.get(2).toString().substring(4, 9));
-			    endTimes.add(cols.get(3).toString().substring(4, 9));
-		    }
-		}
+        HtmlTextInput userInput = loginForm.getInputByName("login_username");
+        userInput.setValueAttribute(user);
+
+        HtmlPasswordInput passwordInput = loginForm.getInputByName("login_password");
+        passwordInput.setValueAttribute(pass);
+        
+        HtmlSubmitInput submitButton = page.getFirstByXPath("/html/body/form/table/tbody/tr[2]/td/input[3]");
+        
+        page = submitButton.click();
+        
+        HtmlTable timesheetTable = page.getFirstByXPath("/html/body/table/tbody/tr/td[1]/table");
+        HtmlTableRow row;
+        List<HtmlTableCell> cells;
+        
+        for(int i = 1; i < timesheetTable.getRowCount() - 3; i++) {
+        	row = timesheetTable.getRow(i);
+			cells = row.getCells();
+			if(cells.size() >= 3) {
+				dates.add(cells.get(1).asText());
+				startTimes.add(cells.get(2).asText());
+				endTimes.add(cells.get(3).asText());
+			}
+        }
+        webClient.close();
 	}
 
 	public void printTimes() {
