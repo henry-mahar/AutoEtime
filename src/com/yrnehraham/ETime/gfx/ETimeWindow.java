@@ -1,6 +1,5 @@
 package com.yrnehraham.ETime.gfx;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -16,7 +15,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 
-
+import com.yrnehraham.ETime.engine.*;
 
 public class ETimeWindow {
 
@@ -79,32 +78,31 @@ public class ETimeWindow {
 		JLabel lblAdpPassword = new JLabel("ADP Password");
 		lblAdpPassword.setBounds(218, 96, 122, 14);
 		panel.add(lblAdpPassword);
-		
+
 		adpPasswordField = new JPasswordField();
 		adpPasswordField.setColumns(10);
 		adpPasswordField.setBounds(350, 93, 86, 20);
 		panel.add(adpPasswordField);
-		
+
 		JButton submit = new JButton("Submit");
+		submit.setMnemonic('S');
 		submit.setBounds(189, 140, 89, 23);
 		panel.add(submit);
-		
+
 		submit.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Submit pressed");
 				try {
-					ETime.submitInfo(tcdbUserTextField.getText(), tcdbPasswordField.getPassword(), adpUserTextField.getText(), adpPasswordField.getPassword());
+					ETime.submitInfo(tcdbUserTextField.getText(), tcdbPasswordField.getPassword(),
+							adpUserTextField.getText(), adpPasswordField.getPassword());
 				} catch (FailingHttpStatusCodeException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 			}
 
 		});
-		pane.add(submit);
-		
 	}
 }
