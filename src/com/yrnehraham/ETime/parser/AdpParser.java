@@ -158,12 +158,14 @@ public class AdpParser {
 				String currentAdpMonth = cells.get(1).asText();
 				DomElement inTime = cells.get(4).getFirstElementChild().getFirstElementChild();
 				DomElement outTime = cells.get(6).getFirstElementChild().getFirstElementChild();
+				DomElement transferCode = cells.get(5).getFirstElementChild().getFirstElementChild();
 				
 				if (currentAdpMonth.substring(0, 3).equals(currentTcdbDate.substring(0, 3))
 						&& currentAdpMonth.substring(currentAdpMonth.indexOf("/") + 1, currentAdpMonth.length() - 1)
 								.equals(tcdbDay)) {
 					System.out.println("Assignment made");
 					inTime.setAttribute("value", startTimes.get(tcdbCounter));
+					transferCode.setAttribute("value", ";220115/856///");
 					outTime.setAttribute("value", endTimes.get(tcdbCounter));
 					tcdbCounter++;
 					previousCell = cells.get(0);
@@ -173,6 +175,7 @@ public class AdpParser {
 		}
 		
         System.out.println("The function has completed");
+        
         
         String pageAsXml = page.asXml();
         try{
@@ -199,8 +202,6 @@ public class AdpParser {
         webClient.setAjaxController(new NicelyResynchronizingAjaxController()); 
         webClient.setCssErrorHandler(new SilentCssErrorHandler());
         webClient.getOptions().setJavaScriptEnabled(true);
-        //webClient.getOptions().setUseInsecureSSL(true);
-       
         
         
         webClient.waitForBackgroundJavaScript(20 * 1000); // will wait JavaScript to execute up to 30s
@@ -236,15 +237,6 @@ public class AdpParser {
         
         HtmlTable payTable = page.getFirstByXPath("//*[@id='kronos']/form[1]/table[2]/tbody/tr[1]/td[1]/table");
         
-        
-        /*
-        DomNodeList<DomNode> payTableNodeRows = payTable.getChildNodes();
-        DomNode previous = null;
-        for(int i = 0; i > payTableNodeRows.getLength(); i++) {
-        	System.out.println(payTableNodeRows.get(i).toString());
-        }
-        */
-        
         Iterable<DomElement> payTableRows = payTable.getChildElements();
         int counter = 0;
         DomElement previous = null;
@@ -264,17 +256,7 @@ public class AdpParser {
         
 	}
 	
-	
-	public void fillOutAndSubmit(TimetableParser tcdbParser) {
-		
-		for(int i = 0; i > tcdbParser.getDates().size(); i++) {
 
-		}
-		
-		
-		
-		
-	}
 	
 	
 }

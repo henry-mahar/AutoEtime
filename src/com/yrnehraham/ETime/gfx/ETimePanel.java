@@ -6,12 +6,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.yrnehraham.ETime.parser.TimetableParser;
@@ -23,32 +26,33 @@ public class ETimePanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int width;
-    private int height;
-    private JButton enter;
-    private JLabel instructions;
-    private JTextArea username = new JTextArea("********");
-    private JTextArea password = new JTextArea("*********");
+    
     
     public ETimePanel(TimetableParser tcdbParser, AdpParser adpParser) {
-
-    	this.width = 400;
-    	this.height = 500;
-    	this.enter = new JButton("Start");
-    	this.instructions = new JLabel("Test");
-    	this.setPreferredSize(new Dimension(width, height));
+    	
     	this.setBackground(Color.gray);
-    	this.add(enter, BorderLayout.SOUTH);
-    	this.add(instructions);
-    	this.username.setEditable(true);
-    	this.password.setEditable(true);
-    	this.username.setBackground(Color.BLUE);
-    	this.username.setBackground(Color.WHITE);
     	//this.setOpaque(true);
     	
-    	this.add(username, BorderLayout.CENTER);
-    	this.add(password, BorderLayout.CENTER);
     	
+    	JTextArea tcdbUsername = new JTextArea("");
+    	JTextArea tcdbPassword = new JTextArea("");
+    	JTextArea adpUsername = new JTextArea("");
+    	JTextArea adpPassword = new JTextArea("");
+    	JButton submit = new JButton("Start");;
+    	
+    	
+    	
+    	
+    	JLabel userLabel = new JLabel("Username: ");
+    	userLabel.setDisplayedMnemonic(KeyEvent.VK_U);
+    	JTextField userTextField = new JTextField();
+    	userLabel.setLabelFor(userTextField);
+        this.add(userLabel, BorderLayout.WEST);
+        this.add(userTextField, BorderLayout.CENTER);
+    	
+    	
+    	
+    	/*
     	this.enter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -76,5 +80,6 @@ public class ETimePanel extends JPanel{
 					System.exit(0);
 				}
 			}});
+			*/
     }
 }
