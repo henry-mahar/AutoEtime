@@ -1,5 +1,6 @@
 package com.yrnehraham.ETime.gfx;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 
 import com.yrnehraham.ETime.engine.*;
+import javax.swing.JProgressBar;
 
 public class ETimeWindow {
 
@@ -88,14 +90,21 @@ public class ETimeWindow {
 		submit.setMnemonic('S');
 		submit.setBounds(189, 140, 89, 23);
 		panel.add(submit);
+		
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setVisible(false);
+		progressBar.setBounds(159, 124, 146, 14);
+		panel.add(progressBar);
 
 		submit.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					ETime.submitInfo(tcdbUserTextField.getText(), new String(tcdbPasswordField.getPassword()),
 							adpUserTextField.getText(), new String(adpPasswordField.getPassword()));
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				} catch (FailingHttpStatusCodeException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

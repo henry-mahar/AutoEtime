@@ -36,22 +36,26 @@ public class ETime {
 			generateErrorWindow("Please input a password for TCDB");
 		} else if(adpUsername.equals("")){
 			generateErrorWindow("Please input a username for ADP");
-		} else if(adpPassword.toString().equals("")){
+		} else if (adpPassword.toString().equals("")) {
 			generateErrorWindow("Please input a password for ADP");
 		} else {
-			
+
 			TimetableParser tcdbParser = new TimetableParser();
 			AdpParser adpParser = new AdpParser();
-			try {
-				tcdbParser.attemptParse(tcdbUsername.trim(), tcdbPassword.trim());
-			} catch (Exception e) {
-				e.printStackTrace();
+
+			if (tcdbParser.attemptParse(tcdbUsername.trim(), tcdbPassword.trim()) == false) {
+				generateErrorWindow("Please provide the correct username and password for TCDB");
+			} else {
+
+				if (adpParser.getPageContent(tcdbParser, adpUsername.trim(), adpPassword.trim())) {
+					generateErrorWindow("Succesfully Saved Etime");
+				} else {
+					generateErrorWindow("Please provide the correct username and password for ADP");
+				}
 			}
-			adpParser.getPageContent(tcdbParser, adpUsername.trim(), adpPassword.trim());
-			tcdbParser.printTimes();
 		}
 	}
-	
+
 	public static void generateErrorWindow(String error) {
 		try {
 			ErrorWindow errorWindow = new ErrorWindow(error);

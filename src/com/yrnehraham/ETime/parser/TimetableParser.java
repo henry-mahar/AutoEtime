@@ -28,7 +28,7 @@ public class TimetableParser {
 
 	}
 
-	public void attemptParse(String user, String pass) throws FailingHttpStatusCodeException, MalformedURLException, IOException  {
+	public boolean attemptParse(String user, String pass) throws FailingHttpStatusCodeException, MalformedURLException, IOException  {
 		
 		String url = "http://tcdb/timesheet.php";
 		
@@ -52,6 +52,10 @@ public class TimetableParser {
         page = submitButton.click();
         
         HtmlTable timesheetTable = page.getFirstByXPath("/html/body/table/tbody/tr/td[1]/table");
+        if(timesheetTable == null) {
+        	webClient.close();
+        	return false;
+        } else {
         HtmlTableRow row;
         List<HtmlTableCell> cells;
         
@@ -64,7 +68,10 @@ public class TimetableParser {
 				endTimes.add(cells.get(3).asText());
 			}
         }
+        
         webClient.close();
+        return true;
+        }
 	}
 
 	public void printTimes() {
