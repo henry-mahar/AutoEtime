@@ -15,7 +15,7 @@ public class ETime {
     
 	public static void main(String[] args) {
 		
-		System.setProperty("javax.net.ssl.trustStore","C:/Users/Henry/workspace/AutoEtime/cacerts");
+		System.setProperty("javax.net.ssl.trustStore","cacerts");
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

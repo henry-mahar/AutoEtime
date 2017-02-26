@@ -3,6 +3,10 @@ package com.yrnehraham.ETime.gfx;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Image;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -18,6 +22,9 @@ import javax.swing.JButton;
 
 import com.yrnehraham.ETime.engine.*;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
+
 
 public class ETimeWindow {
 
@@ -27,6 +34,37 @@ public class ETimeWindow {
 	private JPasswordField tcdbPasswordField;
 	private JTextField adpUserTextField;
 	private JPasswordField adpPasswordField;
+	private JLabel lblVersion;
+	private JButton btnNewButton;
+	
+	
+	class ImagePanel extends JPanel {
+
+		  /**
+		 * 
+		 */
+		private static final long serialVersionUID = 530913198891235081L;
+		private Image img;
+
+		  public ImagePanel(String img) {
+		    this(new ImageIcon(img).getImage());
+		  }
+
+		  public ImagePanel(Image img) {
+		    this.img = img;
+		    Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
+		    setPreferredSize(size);
+		    setMinimumSize(size);
+		    setMaximumSize(size);
+		    setSize(size);
+		    setLayout(null);
+		  }
+
+		  public void paintComponent(Graphics g) {
+		    g.drawImage(img, 0, 0, null);
+		  }
+
+		}
 
 
 	/**
@@ -40,8 +78,14 @@ public class ETimeWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
-		frame.setBounds(100, 100, 485, 213);
+		frame.setTitle("Auto ETime");
+		
+		ImagePanel imagePanel = new ImagePanel(new ImageIcon("infoicon.png").getImage());
+		
+		
+		frame.setBounds(100, 100, 511, 249);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
 		
@@ -59,7 +103,7 @@ public class ETimeWindow {
 		tcdbUserTextField.setColumns(10);
 		
 		lblTcdbPassword = new JLabel("TCDB Password");
-		lblTcdbPassword.setBounds(218, 48, 122, 14);
+		lblTcdbPassword.setBounds(232, 48, 122, 14);
 		panel.add(lblTcdbPassword);
 		
 		tcdbPasswordField = new JPasswordField();
@@ -78,7 +122,7 @@ public class ETimeWindow {
 		adpUserTextField.setColumns(10);
 		
 		JLabel lblAdpPassword = new JLabel("ADP Password");
-		lblAdpPassword.setBounds(218, 96, 122, 14);
+		lblAdpPassword.setBounds(232, 96, 122, 14);
 		panel.add(lblAdpPassword);
 
 		adpPasswordField = new JPasswordField();
@@ -88,13 +132,25 @@ public class ETimeWindow {
 
 		JButton submit = new JButton("Submit");
 		submit.setMnemonic('S');
-		submit.setBounds(189, 140, 89, 23);
+		submit.setBounds(183, 176, 89, 23);
 		panel.add(submit);
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setVisible(false);
-		progressBar.setBounds(159, 124, 146, 14);
+		progressBar.setBounds(159, 151, 146, 14);
 		panel.add(progressBar);
+		
+		lblVersion = new JLabel("Version 0.7.01");
+		lblVersion.setHorizontalAlignment(SwingConstants.CENTER);
+		lblVersion.setBounds(350, 185, 146, 14);
+		panel.add(lblVersion);
+		
+		btnNewButton = new JButton("");
+		btnNewButton.setVisible(false);
+		btnNewButton.setIcon(new ImageIcon(ETimeWindow.class.getResource("/javax/swing/plaf/metal/icons/ocean/info.png")));
+		btnNewButton.setSelectedIcon(new ImageIcon(ETimeWindow.class.getResource("/javax/swing/plaf/metal/icons/ocean/info.png")));
+		btnNewButton.setBounds(445, 0, 40, 41);
+		panel.add(btnNewButton);
 
 		submit.addActionListener(new ActionListener() {
 
